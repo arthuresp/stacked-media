@@ -1,8 +1,8 @@
-version: "3.9"
-name: media-stack
+version: "1.0.0"
+name: stacked-media
 services:
 
-  # To use/enable VPN, Run this compose file with --profile=vpn. Its highly recommended to use VPN.
+  # To use/enable VPN, Run this compose file with --profile=vpn. Use without VPN at your own risk.
   vpn:
     ## Read https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers for details on configuring VPN for your service provider.
     profiles: ["vpn"]
@@ -42,15 +42,18 @@ services:
     networks:
       - mynetwork
     
-    # Uncomment/enable below ports if VPN is used/enabled
-    # ports:
-    #   # qbittorrent ports
-    #   - 5080:5080
-    #   - 6881:6881
-    #   - 6881:6881/udp
-    #   # prowlarr ports
-    #   - 9696:9696
+    # Comment/disable below ports if VPN is unused/disabled (not recommended)
+    ports:
+      # qbittorrent ports
+      - 5080:5080
+      - 6881:6881
+      - 6881:6881/udp
+      # prowlarr ports
+      - 9696:9696
+      # flaresolverr ports
+      - 9191:9191
     restart: "unless-stopped"
+
 
   ## Default credentials of qBittorrent - Username: admin password: adminadmin ##
   ## Change password after install from UI --> Tools --> Options --> WebUI ##
@@ -58,16 +61,16 @@ services:
     container_name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:4.6.4
 
-    # Unomment below if vpn is enabled
-    # depends_on:               # Uncomment this line if vpn is enabled
-    #   - vpn                   # Uncomment this line if vpn is enabled
+    # Comment below if vpn is disabled
+     depends_on:
+       - vpn
 
-    # Comment below lines if VPN is enabled
-    networks:               # Comment this line if vpn is enabled
-      - mynetwork           # Comment this line if vpn is enabled
+    # Uncomment below lines if VPN is disabled
+    #networks:
+    #  - mynetwork
 
-    # Unomment below line if vpn is enabled
-    # network_mode: service:vpn
+    # Comment below line if vpn is disabled
+     network_mode: service:vpn
 
     environment:
       - PUID=1000
@@ -78,21 +81,21 @@ services:
       - qbittorrent-config:/config
       - torrent-downloads:/downloads
 
-    ## Comment/Disable below ports if VPN is enabled
-    ports:
-      - 5080:5080
-      - 6881:6881
-      - 6881:6881/udp
+    ## Uncomment/enable below ports if VPN is disabled
+    #ports:
+    #  - 5080:5080
+    #  - 6881:6881
+    #  - 6881:6881/udp
     restart: "unless-stopped"
 
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:5.5.3
+    image: lscr.io/linuxserver/radarr:5.6.0
     networks:
-      - mynetwork   # Comment this line if VPN is enabled
-    ## Uncomment below lines if VPN is enabled
-    #   mynetwork:
-    #     ipv4_address: ${RADARR_STATIC_CONTAINER_IP} # It should be available IPv4 address in range of docker network `mynetwork` e.g. 172.20.0.2
+    #  - mynetwork   # Uncomment this line if VPN is disabled
+    ## Comment below lines if VPN is disabled
+       mynetwork:
+         ipv4_address: ${RADARR_STATIC_CONTAINER_IP} # It should be available IPv4 address in range of docker network `mynetwork` e.g. 172.20.0.2
     environment:
       - PUID=1000
       - PGID=1000
@@ -108,10 +111,10 @@ services:
     image: linuxserver/sonarr:4.0.4
     container_name: sonarr
     networks:
-      - mynetwork   # Comment this line if VPN is enabled
-    ## Uncomment below lines if VPN is enabled
-    #   mynetwork:
-    #     ipv4_address: ${SONARR_STATIC_CONTAINER_IP} # It should be available IPv4 address in range of docker network `mynetwork` e.g. 172.20.0.2
+    #  - mynetwork   # Uncomment this line if VPN is disabled
+    ## Comment below lines if VPN is disabled
+       mynetwork:
+         ipv4_address: ${SONARR_STATIC_CONTAINER_IP} # It should be available IPv4 address in range of docker network `mynetwork` e.g. 172.20.0.2
     environment:
       - PUID=1000
       - PGID=1000
@@ -127,13 +130,13 @@ services:
     container_name: prowlarr
     image: linuxserver/prowlarr:1.17.2
 
-    # Uncomment below if vpn is enabled
-    # depends_on:               # Uncomment this line if vpn is enabled
-    #   - vpn                   # Uncomment this line if vpn is enabled
-    # network_mode: service:vpn # Uncomment this line if vpn is enabled
+    # Comment below if vpn is disabled
+    depends_on:
+       - vpn
+    network_mode: service:vpn # Comment this line if vpn is disabled
 
-    networks:               # Comment this line if vpn is enabled
-      - mynetwork           # Comment this line if vpn is enabled
+    #networks:               # Uncomment this line if vpn is disabled
+    #  - mynetwork           # Uncomment this line if vpn is disabled
     environment:
       - PUID=1000
       - PGID=1000
@@ -141,9 +144,9 @@ services:
     volumes:
       - prowlarr-config:/config
 
-    # Comment below ports if VPN is enabled.
-    ports:
-      - 9696:9696
+    # Uncomment below ports if VPN is disabled.
+    #ports:
+    #  - 9696:9696
     restart: unless-stopped
 
   jellyseerr:
@@ -162,7 +165,7 @@ services:
     restart: unless-stopped
 
   jellyfin:
-    image: linuxserver/jellyfin:10.8.13
+    image: linuxserver/jellyfin:10.9.2
     container_name: jellyfin
     networks:
       - mynetwork
@@ -180,7 +183,33 @@ services:
       - 7359:7359/udp
       - 8920:8920
     restart: unless-stopped
+
+  # WIP implementation. Optional since not everyone will want/need to use it. 
+  # Doc: https://github.com/FlareSolverr/FlareSolverr
+  # flaresolverr:
+  #   image: flaresolverr/flaresolverr:3.3.18
+  #   container_name: flaresolverr
+    
+  #   # Comment below if vpn is disabled
+  #   depends_on:
+  #      - vpn
+  #   network_mode: service:vpn # Comment this line if vpn is disabled
+
+  #   #networks:               # Uncomment this line if vpn is disabled
+  #   #  - mynetwork           # Uncomment this line if vpn is disabled
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=UTC
+  #     - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}  # Customize as needed
+  #   volumes:
+  #     - flaresolverr-config:/config
   
+  #   # Uncomment below ports if VPN is disabled.
+  #   #ports:
+  #   #  - 8191:8191
+  #   restart: unless-stopped 
+
   # Doc: https://github.com/navilg/cleanmyarr
   # cleanmyarr:
   #   depends_on:
@@ -219,6 +248,7 @@ volumes:
   jellyfin-config:
   qbittorrent-config:
   jellyseerr-config:
+  # flaresolverr-config:
   # cleanmyarr-config:
 
 networks:
