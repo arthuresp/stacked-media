@@ -1,10 +1,9 @@
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/linuxshots)
 
 # media-stack
 
 A stack of self-hosted media managers and streamer along with VPN. 
 
-Stack include VPN, Radarr, Sonarr, Prowlarr, qBittorrent, Jellyseerr and Jellyfin.
+Stack includes VPN, Radarr, Sonarr, Prowlarr,  qBittorrent, Jellyseerr and Jellyfin. (Optional containers include Uptime Kuma and FlareSolverr)
 
 ## Requirements
 
@@ -112,6 +111,10 @@ Sonarr can also be configured in similar way.
 - This will add indexers in respective apps automatically.
 
 **Note: If VPN is enabled, then Prowlarr will not be able to reach radarr and sonarr with localhost or container service name. In that case use static IP for sonarr and radarr in radarr/sonarr server field (for e.g. http://172.19.0.5:8989). Prowlar will also be not reachable with its container/service name. Use `http://vpn:9696` instead in prowlar server field.**
+
+## Configure JellySeerr
+
+Coming soon.
 
 ## Configure Nginx
 
