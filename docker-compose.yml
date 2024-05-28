@@ -174,7 +174,7 @@ services:
 
   jellyfin:
     container_name: jellyfin
-    image: linuxserver/jellyfin:10.9.2
+    image: linuxserver/jellyfin:10.9.3
     networks:
       - mynetwork
     environment:
@@ -191,6 +191,23 @@ services:
       - 7359:7359/udp
       - 8920:8920
     restart: unless-stopped
+
+    
+  # bazarr:
+  #   container_name: bazarr
+  #   image: lscr.io/linuxserver/bazarr:1.4.2
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=UTC
+  #   volumes:
+  #     - bazarr-config/config:/config
+  #     - torrent-downloads/movies:/movies #optional
+  #     - torrent-downloads/tvshows:/tv #optional
+  #   ports:
+  #     - 6767:6767
+  #   restart: unless-stopped
+
 
   # Doc: https://github.com/louislam/uptime-kuma
   # uptime-kuma:
@@ -231,6 +248,7 @@ services:
   #   #  - 8191:8191
   #   restart: unless-stopped 
 
+
 volumes:
   torrent-downloads:
   radarr-config:
@@ -239,6 +257,7 @@ volumes:
   jellyfin-config:
   qbittorrent-config:
   jellyseerr-config:
+  # bazarr-config:
   # uptime-kuma-config:
   # flaresolverr-config:
 
