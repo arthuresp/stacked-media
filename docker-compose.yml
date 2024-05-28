@@ -202,8 +202,7 @@ services:
   #     - TZ=UTC
   #   volumes:
   #     - bazarr-config/config:/config
-  #     - torrent-downloads/movies:/movies #optional
-  #     - torrent-downloads/tvshows:/tv #optional
+  #     - torrent-downloads:/data
   #   ports:
   #     - 6767:6767
   #   restart: unless-stopped
